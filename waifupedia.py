@@ -101,7 +101,7 @@ async def on_message(message):
     if message.content.split(" ")[0] == "%divorce":
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.harem:
-            if(w.name == toDivorce):
+            if(w.name.lower() == toDivorce.lower()):
                 await message.channel.send(user.name + " has divorced " + w.name + " for $" + str(w.value))
                 user.money += w.value
                 user.harem.remove(w) 
@@ -112,7 +112,7 @@ async def on_message(message):
         toSearch = message.content.split(" ", 1)[1]
         p = waifutools.SearchFor(toSearch)
         if(p == False):
-            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toSearch)
             return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
@@ -123,7 +123,7 @@ async def on_message(message):
         toSearch = message.content.split(" ", 1)[1]
         p = waifutools.SearchFor(toSearch)
         if(p == False):
-            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toSearch)
             return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         
@@ -139,7 +139,7 @@ async def on_message(message):
         toSearch = message.content.split(" ", 1)[1]
         p = waifutools.SearchFor(toSearch)
         if(p == False):
-            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toSearch)
             return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         
@@ -150,10 +150,10 @@ async def on_message(message):
                 
         if(user.money >= w.value):
             user.harem.append(w)
-            msg = await message.channel.send(user.name + " has married " + w.name + " for $" + w.value +"! $" + user.money + " remaining!")
+            msg = await message.channel.send(user.name + " has married " + w.name + " for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
             user.money -= w.value
         else:
-            msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + w.value)
+            msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))
     
     if message.content.split(" ")[0] == "%wishremove":
         toDivorce = message.content.split(" ", 1)[1]

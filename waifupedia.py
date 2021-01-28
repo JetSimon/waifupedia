@@ -159,8 +159,9 @@ async def on_message(message):
                 
         if(user.money >= w.value):
             user.harem.append(w)
-            msg = await message.channel.send("**"+user.name + "** has married **" + w.name + "** for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
             user.money -= w.value
+            msg = await message.channel.send("**"+user.name + "** has married **" + w.name + "** for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
+            
             waifutools.Save(users, waifus)
         else:
             msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))

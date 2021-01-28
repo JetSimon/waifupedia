@@ -48,10 +48,15 @@ async def on_message(message):
         user = userAttempt
 
     if message.content == '%w' or message.content == '%wiki':
-
+        
         if(user.CanRoll()):
+            await message.channel.send("Rolling up a waifu for " + user.name + "...")
             user.lastRolled = datetime.datetime.now()
-            w = waifutools.GenerateWaifu()
+
+            if(random.randint(0,100) == 50 and len(user.wishlist) > 0):
+                w = random.choices(user.wishlist)
+            else:
+                w = waifutools.GenerateWaifu()
             embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
             print(w.image)
             embed.set_image(url=w.image)
@@ -87,6 +92,12 @@ async def on_message(message):
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
         await message.channel.send(out)
 
+    if message.content == "%wishlist":
+        out = user.name + "'s Wishlist:\n"
+        for w in user.wishlist:
+            out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
+        await message.channel.send(out)
+
     if message.content.split(" ")[0] == "%divorce":
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.harem:
@@ -96,6 +107,40 @@ async def on_message(message):
                 user.harem.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not married to " + toDivorce)
+
+    if message.content.split(" ")[0] == "%im":
+        toSearch = message.content.split(" ", 1)[1]
+        p = waifutools.SearchFor(toSearch)
+        if(p == False):
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+        w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
+        embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
+        embed.set_image(url=w.image)
+        msg = await message.channel.send(embed=embed)
+
+    if message.content.split(" ")[0] == "%wish":
+        toSearch = message.content.split(" ", 1)[1]
+        p = waifutools.SearchFor(toSearch)
+        if(p == False):
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+        w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
+        
+        for wife in user.wishlist:
+            if(wife.name == w.name):
+                msg = await message.channel.send(user.name + ", you are already wishing for " + w.name)
+                return
+                
+        user.wishlist.append(w)
+        msg = await message.channel.send(user.name + " has wished for " + w.name)
+    
+    if message.content.split(" ")[0] == "%wishremove":
+        toDivorce = message.content.split(" ", 1)[1]
+        for w in user.wishlist:
+            if(w.name.lower() == toDivorce.lower()):
+                await message.channel.send(user.name + " has removed " + w.name + " from their wishlist")
+                user.wishlist.remove(w) 
+                return
+        await message.channel.send(user.name + ", you are not wishing for " + toDivorce)
 
     if message.content == "%divorceall":
         totalVal = 0

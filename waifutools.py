@@ -69,3 +69,12 @@ def GetUser(users,name):
         if user.name == name:
             return user
     return False
+
+def GetRules():
+    rules = ["%w/%wiki - roll a waifu", "%divorce WAIFUNAME- divorce a waifu for money", "%divorceall divorce all waifus are married to"
+    ,"%buy WAIFUNAME - buy any waifu if you have the money", "%im WAIFUNAME - search for a waifu", "%harem - view all waifus you are currently married to"
+    ,"%$/%money - see all your wikibucks you have", "%wish WAIFUNAME - add waifu to your wishlist", "%wishremove WAIFUNAME - remove waifu from your wishlist", "%wishlist - view your wishlist"]
+    out=""
+    for rule in rules:
+        out += " - " + rule + "\n"
+    return out

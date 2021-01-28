@@ -54,7 +54,7 @@ async def on_message(message):
             user.lastRolled = datetime.datetime.now()
 
             if(random.randint(0,100) == 50 and len(user.wishlist) > 0):
-                w = random.choices(user.wishlist)
+                w = random.choice(user.wishlist)
             else:
                 w = waifutools.GenerateWaifu()
             embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
@@ -73,7 +73,7 @@ async def on_message(message):
             except asyncio.TimeoutError:
                 print("out of time!")
             else:
-                await message.channel.send(u.name + " has married " + w.name + "!")
+                await message.channel.send("**"+u.name + "** has married **" + w.name + "**!")
                 waifutools.GetUser(users, u.name).harem.append(w)
 
             waifus.append(w)
@@ -81,28 +81,35 @@ async def on_message(message):
 
         else:
             await message.channel.send(user.name + ", you must wait " + str(user.TimeToRoll()) + " seconds to roll!")
-        
+    
+    if message.content == "%help":
+        embed=discord.Embed(title="LIST OF COMMANDS", description=waifutools.GetRules(), color=0xFF5733)
+        await message.channel.send(embed=embed)
     
     if message.content == "%$" or message.content == "%money":
         await message.channel.send("You currently have $" + str(user.money) + " wikibucks!")
 
     if message.content == "%harem":
-        out = user.name + "'s Harem:\n"
+        out = ""
         for w in user.harem:
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
-        await message.channel.send(out)
+        embed=discord.Embed(title=user.name + "'s Harem", description=out, color=0xFF5733)
+        embed.set_author(name=message.author.name,icon_url=message.author.avatar_url)
+        await message.channel.send(embed=embed)
 
     if message.content == "%wishlist":
-        out = user.name + "'s Wishlist:\n"
+        out = ""
         for w in user.wishlist:
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
-        await message.channel.send(out)
+        embed=discord.Embed(title=user.name + "'s Wishlist", description=out, color=0xFF5733)
+        embed.set_author(name=message.author.name,icon_url=message.author.avatar_url)
+        await message.channel.send(embed=embed)
 
     if message.content.split(" ")[0] == "%divorce":
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.harem:
             if(w.name.lower().strip() == toDivorce.lower().strip()):
-                await message.channel.send(user.name + " has divorced " + w.name + " for $" + str(w.value))
+                await message.channel.send("**"+user.name + "** has divorced **" + w.name + "** for $" + str(w.value))
                 user.money += w.value
                 user.harem.remove(w) 
                 return
@@ -152,7 +159,7 @@ async def on_message(message):
                 
         if(user.money >= w.value):
             user.harem.append(w)
-            msg = await message.channel.send(user.name + " has married " + w.name + " for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
+            msg = await message.channel.send("**"+user.name + "** has married **" + w.name + "** for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
             user.money -= w.value
             waifutools.Save(users, waifus)
         else:

@@ -107,7 +107,7 @@ async def on_message(message):
                 user.harem.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not married to " + toDivorce)
-        waifutools.Save()
+        waifutools.Save(users, waifus)
 
     if message.content.split(" ")[0] == "%im":
         toSearch = message.content.split(" ", 1)[1]
@@ -135,7 +135,7 @@ async def on_message(message):
                 
         user.wishlist.append(w)
         msg = await message.channel.send(user.name + " has wished for " + w.name)
-        waifutools.Save()
+        waifutools.Save(users, waifus)
 
     if message.content.split(" ")[0] == "%buy":
         toSearch = message.content.split(" ", 1)[1]
@@ -154,7 +154,7 @@ async def on_message(message):
             user.harem.append(w)
             msg = await message.channel.send(user.name + " has married " + w.name + " for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
             user.money -= w.value
-            waifutools.Save()
+            waifutools.Save(users, waifus)
         else:
             msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))
     
@@ -166,7 +166,7 @@ async def on_message(message):
                 user.wishlist.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not wishing for " + toDivorce)
-        waifutools.Save()
+        waifutools.Save(users, waifus)
 
     if message.content == "%divorceall":
         totalVal = 0
@@ -175,7 +175,7 @@ async def on_message(message):
         user.money += totalVal
         user.harem = []
         await message.channel.send(user.name + " has cleansed their harem for $" + str(totalVal))
-        waifutools.Save()
+        waifutools.Save(users, waifus)
 
 
 

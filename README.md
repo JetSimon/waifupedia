@@ -1,9 +1,9 @@
 
 
-# waifupedia
+<h1><img src="waifupedia.png" width="48"> - WAIFUPEDIA </h1> 
+
 a discord bot where you can marry wikipedia pages gatcha style!
 
-![](waifupedia.png)
 
 to install the bot on your server you will need your own bot token for now. You will also need a .env in the directory the waifupedia.py file is in. This .env files should follow the format:
 

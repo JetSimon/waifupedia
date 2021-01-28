@@ -83,7 +83,7 @@ async def on_message(message):
             await message.channel.send(user.name + ", you must wait " + str(user.TimeToRoll()) + " seconds to roll!")
         
     
-    if message.content == "%$":
+    if message.content == "%$" or message.content == "%money":
         await message.channel.send("You currently have $" + str(user.money) + " wikibucks!")
 
     if message.content == "%harem":
@@ -101,7 +101,7 @@ async def on_message(message):
     if message.content.split(" ")[0] == "%divorce":
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.harem:
-            if(w.name.lower() == toDivorce.lower()):
+            if(w.name.lower().strip() == toDivorce.lower().strip()):
                 await message.channel.send(user.name + " has divorced " + w.name + " for $" + str(w.value))
                 user.money += w.value
                 user.harem.remove(w) 
@@ -158,7 +158,7 @@ async def on_message(message):
     if message.content.split(" ")[0] == "%wishremove":
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.wishlist:
-            if(w.name.lower() == toDivorce.lower()):
+            if(w.name.lower().strip() == toDivorce.lower().strip()):
                 await message.channel.send(user.name + " has removed " + w.name + " from their wishlist")
                 user.wishlist.remove(w) 
                 return

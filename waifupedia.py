@@ -113,6 +113,7 @@ async def on_message(message):
         p = waifutools.SearchFor(toSearch)
         if(p == False):
             await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
         embed.set_image(url=w.image)
@@ -123,6 +124,7 @@ async def on_message(message):
         p = waifutools.SearchFor(toSearch)
         if(p == False):
             await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         
         for wife in user.wishlist:
@@ -132,6 +134,26 @@ async def on_message(message):
                 
         user.wishlist.append(w)
         msg = await message.channel.send(user.name + " has wished for " + w.name)
+
+    if message.content.split(" ")[0] == "%buy":
+        toSearch = message.content.split(" ", 1)[1]
+        p = waifutools.SearchFor(toSearch)
+        if(p == False):
+            await message.channel.send(user.name + ", I did not find a page by the name of " + toDivorce)
+            return
+        w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
+        
+        for wife in user.harem:
+            if(wife.name == w.name):
+                msg = await message.channel.send(user.name + ", you are already married to " + w.name)
+                return
+                
+        if(user.money >= w.value):
+            user.harem.append(w)
+            msg = await message.channel.send(user.name + " has married " + w.name + " for $" + w.value +"! $" + user.money + " remaining!")
+            user.money -= w.value
+        else:
+            msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + w.value)
     
     if message.content.split(" ")[0] == "%wishremove":
         toDivorce = message.content.split(" ", 1)[1]

@@ -1,11 +1,18 @@
-import json, random, jsonpickle, wikipedia
+import json, random, jsonpickle, wikipedia, datetime
 
 class User(object):
     def __init__(self, name):
         self.name = name
         self.money = 100
         self.harem = []
+        self.lastRolled = datetime.datetime(1970, 1, 2)
     
+    def CanRoll(self):
+        return ((datetime.datetime.now() - self.lastRolled).total_seconds()) > (60*5)
+    
+    def TimeToRoll(self):
+        return int((60*5) - (datetime.datetime.now() - self.lastRolled).total_seconds())
+
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 

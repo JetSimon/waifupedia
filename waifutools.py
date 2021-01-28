@@ -4,7 +4,7 @@ ROLL_TIME = 30
 class User(object):
     def __init__(self, name):
         self.name = name
-        self.money = 100
+        self.money = 0
         self.harem = []
         self.wishlist = []
         self.lastRolled = datetime.datetime(1970, 1, 2)

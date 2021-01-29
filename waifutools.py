@@ -63,8 +63,7 @@ def GenerateWaifu():
         p = wikipedia.page(s)
     except wikipedia.exceptions.PageError as e:
         errorThrown = True
-        s = random.choice(e.options)
-        p = wikipedia.page(s)
+
     while (errorThrown or len(p.images) == 0 or "svg" in p.images[0] or "ogg" in p.images[0]):
         errorThrown = False
         try:
@@ -75,9 +74,9 @@ def GenerateWaifu():
             p = wikipedia.page(s)
         except wikipedia.exceptions.PageError as e:
             errorThrown = True
-            s = random.choice(e.options)
-            p = wikipedia.page(s)
-    w = Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
+
+    val = int((len(p.content) / 100))
+    w = Waifu(p.title, p.images[0], val, p.summary.split(".")[0], p.url)
     return w
  
 def SearchFor(s):

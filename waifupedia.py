@@ -9,19 +9,13 @@ GUILD = os.getenv('DISCORD_GUILD')
 client = discord.Client()
 
 users = []
-waifus = []
+
 
 if os.path.isfile('users.json'):
     print("users file found")
     with open('users.json', 'r') as fp:
         u = fp.read()
         users = jsonpickle.decode(u)
-
-if os.path.isfile('waifus.json'):
-    print("waifus file found")
-    with open('waifus.json', 'r') as fp:
-        u = fp.read()
-        waifus = jsonpickle.decode(u)
 
 @client.event
 async def on_ready():
@@ -42,7 +36,7 @@ async def on_message(message):
 
     userAttempt = waifutools.GetUser(users, message.author.name)
     if(userAttempt == False):
-        user = waifutools.User(message.author.name)
+        user = waifutools.User(message.author.name, str(message.author.avatar_url))
         users.append(user)
     else:
         user = userAttempt
@@ -57,10 +51,13 @@ async def on_message(message):
                 w = random.choice(user.wishlist)
             else:
                 w = waifutools.GenerateWaifu()
-            embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
-            print(w.image)
-            embed.set_image(url=w.image)
+
+            embed=waifutools.WaifuEmbed(w,users)
             msg = await message.channel.send(embed=embed)
+
+            if(waifutools.GetOwner(w, users) != None):
+                return
+
             await msg.add_reaction("💕")
 
             def marry(reaction, u):
@@ -76,8 +73,8 @@ async def on_message(message):
                 await message.channel.send("**"+u.name + "** has married **" + w.name + "**!")
                 waifutools.GetUser(users, u.name).harem.append(w)
 
-            waifus.append(w)
-            waifutools.Save(users, waifus)
+            
+            waifutools.Save(users)
 
         else:
             await message.channel.send(user.name + ", you must wait " + str(user.TimeToRoll()) + " seconds to roll!")
@@ -91,8 +88,11 @@ async def on_message(message):
 
     if message.content == "%harem":
         out = ""
+        totalVal = 0
         for w in user.harem:
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
+            totalVal += w.value
+        out+="\nTotal Value: $" + str(totalVal)
         embed=discord.Embed(title=user.name + "'s Harem", description=out, color=0xFF5733)
         embed.set_author(name=message.author.name,icon_url=message.author.avatar_url)
         await message.channel.send(embed=embed)
@@ -114,7 +114,7 @@ async def on_message(message):
                 user.harem.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not married to " + toDivorce)
-        waifutools.Save(users, waifus)
+        waifutools.Save(users)
 
     if message.content.split(" ")[0] == "%im":
         toSearch = message.content.split(" ", 1)[1]
@@ -123,8 +123,7 @@ async def on_message(message):
             await message.channel.send(user.name + ", I did not find a page by the name of " + toSearch)
             return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
-        embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
-        embed.set_image(url=w.image)
+        embed = waifutools.WaifuEmbed(w,users)
         msg = await message.channel.send(embed=embed)
 
     if message.content.split(" ")[0] == "%wish":
@@ -142,7 +141,7 @@ async def on_message(message):
                 
         user.wishlist.append(w)
         msg = await message.channel.send(user.name + " has wished for " + w.name)
-        waifutools.Save(users, waifus)
+        waifutools.Save(users)
 
     if message.content.split(" ")[0] == "%buy":
         toSearch = message.content.split(" ", 1)[1]
@@ -152,6 +151,10 @@ async def on_message(message):
             return
         w = waifutools.Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)
         
+        if(waifutools.GetOwner(w, users) != None):
+            await message.channel.send(w.name + " is already married.")
+            return
+
         for wife in user.harem:
             if(wife.name == w.name):
                 msg = await message.channel.send(user.name + ", you are already married to " + w.name)
@@ -162,7 +165,7 @@ async def on_message(message):
             user.money -= w.value
             msg = await message.channel.send("**"+user.name + "** has married **" + w.name + "** for $" + str(w.value) +"! $" + str(user.money) + " remaining!")
             
-            waifutools.Save(users, waifus)
+            waifutools.Save(users)
         else:
             msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))
     
@@ -174,7 +177,7 @@ async def on_message(message):
                 user.wishlist.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not wishing for " + toDivorce)
-        waifutools.Save(users, waifus)
+        waifutools.Save(users)
 
     if message.content == "%divorceall":
         totalVal = 0
@@ -182,8 +185,9 @@ async def on_message(message):
             totalVal += w.value
         user.money += totalVal
         user.harem = []
+        waifutools.Save(users)
         await message.channel.send(user.name + " has cleansed their harem for $" + str(totalVal))
-        waifutools.Save(users, waifus)
+        
 
 
 

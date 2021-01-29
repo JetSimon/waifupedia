@@ -1,8 +1,23 @@
-import json, random, jsonpickle, wikipedia, datetime
+import json, random, jsonpickle, wikipedia, datetime, discord
 
 ROLL_TIME = 30
+
+
+class Waifu(object):
+    def __init__(self, name, image, value, desc, url):
+        self.image = image
+        self.name = name
+        self.desc = desc
+        self.value = value
+        self.url = url
+    
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+
 class User(object):
-    def __init__(self, name):
+    def __init__(self, name, img):
+        self.img = img
         self.name = name
         self.money = 0
         self.harem = []
@@ -18,17 +33,24 @@ class User(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+def GetOwner(waifu, users):
+    for user in users:
+        for w in user.harem:
+            if(w.name == waifu.name):
+                print("owner is "+ user.name)
+                return user
+    return None
 
-class Waifu(object):
-    def __init__(self, name, image, value, desc, url):
-        self.image = image
-        self.name = name
-        self.desc = desc
-        self.value = value
-        self.url = url
-    
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+def WaifuEmbed(w, users):
+    embed=discord.Embed(title=(w.name + " - " + "$" + str(w.value)), description=w.desc, color=0xFF5733, url=w.url)
+    embed.set_image(url=w.image)
+
+    user = GetOwner(w, users)
+
+    if(user != None):
+        embed.set_author(name="married to " + user.name,icon_url=user.img)
+
+    return embed
 
 
 def GenerateWaifu():
@@ -56,12 +78,9 @@ def SearchFor(s):
         return False
     return p
 
-def Save(users, waifus):
+def Save(users):
     with open('users.json', 'w') as fp:
         u=jsonpickle.encode(users)
-        fp.write(u)
-    with open('waifus.json', 'w') as fp:
-        u=jsonpickle.encode(waifus)
         fp.write(u)
 
 def GetUser(users,name):

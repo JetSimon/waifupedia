@@ -140,7 +140,7 @@ async def on_message(message):
                 return
                 
         user.wishlist.append(w)
-        msg = await message.channel.send(user.name + " has wished for " + w.name)
+        msg = await message.channel.send("**"+user.name + "** has wished for **" + w.name+"**")
         waifutools.Save(users)
 
     if message.content.split(" ")[0] == "%buy":
@@ -174,7 +174,7 @@ async def on_message(message):
         toGiveTo = message.content.split(" ", 1)[1].split(":")[1]
        
         for wife in user.harem:
-            if(wife.name == toSearch):
+            if(wife.name.lower().strip() == toSearch.lower().strip()):
                 w = wife
                 for u in users:
                     if(u.name == toGiveTo):
@@ -193,7 +193,7 @@ async def on_message(message):
         toDivorce = message.content.split(" ", 1)[1]
         for w in user.wishlist:
             if(w.name.lower().strip() == toDivorce.lower().strip()):
-                await message.channel.send(user.name + " has removed " + w.name + " from their wishlist")
+                await message.channel.send("**"+user.name + "** has removed **" + w.name + "** from their wishlist")
                 user.wishlist.remove(w) 
                 return
         await message.channel.send(user.name + ", you are not wishing for " + toDivorce)

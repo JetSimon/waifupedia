@@ -59,10 +59,16 @@ def GenerateWaifu():
     except wikipedia.DisambiguationError as e:
         s = random.choice(e.options)
         p = wikipedia.page(s)
+    except wikipedia.exceptions.PageError as e:
+        s = random.choice(e.options)
+        p = wikipedia.page(s)
     while (len(p.images) == 0 or "svg" in p.images[0] or "ogg" in p.images[0]):
         try:
             p = wikipedia.page(wikipedia.random())
         except wikipedia.DisambiguationError as e:
+            s = random.choice(e.options)
+            p = wikipedia.page(s)
+        except wikipedia.exceptions.PageError as e:
             s = random.choice(e.options)
             p = wikipedia.page(s)
     w = Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)

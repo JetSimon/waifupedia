@@ -168,6 +168,26 @@ async def on_message(message):
             waifutools.Save(users)
         else:
             msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))
+
+    if message.content.split(" ")[0] == "%give":
+        toSearch = message.content.split(" ", 1)[1].split(":")[0]
+        toGiveTo = message.content.split(" ", 1)[1].split(":")[1]
+       
+        for wife in user.harem:
+            if(wife.name == toSearch):
+                w = wife
+                for u in users:
+                    if(u.name == toGiveTo):
+                        u.harem.append(w)
+                        user.harem.remove(w)
+                        msg = await message.channel.send("**" + user.name + "** has given **" + w.name + "** to **" + u.name + "**")
+                        return
+                await message.channel.send(toGiveTo + " is not a user")
+                return
+
+        await message.channel.send(user.name + ", you are not married to " + toSearch)
+        return
+
     
     if message.content.split(" ")[0] == "%wishremove":
         toDivorce = message.content.split(" ", 1)[1]

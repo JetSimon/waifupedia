@@ -54,21 +54,27 @@ def WaifuEmbed(w, users):
 
 
 def GenerateWaifu():
+    errorThrown = False
     try:
         p = wikipedia.page(wikipedia.random())
     except wikipedia.DisambiguationError as e:
+        errorThrown = True
         s = random.choice(e.options)
         p = wikipedia.page(s)
     except wikipedia.exceptions.PageError as e:
+        errorThrown = True
         s = random.choice(e.options)
         p = wikipedia.page(s)
-    while (len(p.images) == 0 or "svg" in p.images[0] or "ogg" in p.images[0]):
+    while (errorThrown or len(p.images) == 0 or "svg" in p.images[0] or "ogg" in p.images[0]):
+        errorThrown = False
         try:
             p = wikipedia.page(wikipedia.random())
         except wikipedia.DisambiguationError as e:
+            errorThrown = True
             s = random.choice(e.options)
             p = wikipedia.page(s)
         except wikipedia.exceptions.PageError as e:
+            errorThrown = True
             s = random.choice(e.options)
             p = wikipedia.page(s)
     w = Waifu(p.title, p.images[0], int(len(p.content) / 100), p.summary.split(".")[0], p.url)

@@ -97,22 +97,22 @@ def PrevPage(l, current):
 def GenerateWaifu():
     errorThrown = False
     try:
-        p = wikipedia.page(wikipedia.random())
+        p = wikipedia.page(wikipedia.random(), preload=True)
     except wikipedia.DisambiguationError as e:
         errorThrown = True
         s = random.choice(e.options)
-        p = wikipedia.page(s)
+        p = wikipedia.page(s, preload=True)
     except wikipedia.exceptions.PageError as e:
         errorThrown = True
 
-    while (errorThrown or len(p.images) == 0 or "svg" in p.images[0] or "ogg" in p.images[0]):
+    while (errorThrown or len(p.images) == 0 ):
         errorThrown = False
         try:
-            p = wikipedia.page(wikipedia.random())
+            p = wikipedia.page(wikipedia.random(), preload=True)
         except wikipedia.DisambiguationError as e:
             errorThrown = True
             s = random.choice(e.options)
-            p = wikipedia.page(s)
+            p = wikipedia.page(s, preload=True)
         except wikipedia.exceptions.PageError as e:
             errorThrown = True
 
@@ -122,10 +122,10 @@ def GenerateWaifu():
  
 def SearchFor(s):
     try:
-        p = wikipedia.page(title=wikipedia.search(s, results=1, suggestion=False)[0])
+        p = wikipedia.page(title=wikipedia.search(s, results=1, suggestion=False)[0], preload=True)
     except wikipedia.DisambiguationError as e:
         s = random.choice(e.options)
-        p = wikipedia.page(s)
+        p = wikipedia.page(s, preload=True)
     except wikipedia.PageError:
         return False
     return p

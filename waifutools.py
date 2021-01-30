@@ -16,7 +16,8 @@ class Waifu(object):
 
 
 class User(object):
-    def __init__(self, name, img):
+    def __init__(self, name, img, id):
+        self.id = str(id)
         self.img = img
         self.name = name
         self.money = 0
@@ -135,9 +136,14 @@ def Save(users):
         fp.write(u)
 
 def GetUser(users,name):
-    for user in users:
-        if user.name == name:
-            return user
+    if("@" not in name):
+        for user in users:
+            if user.name == name:
+                return user
+    else:
+        for user in users:
+            if user.id == name.replace("<","").replace(">","").replace("@","").replace("!",""):
+                return user
     return False
 
 def GetRules():

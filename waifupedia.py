@@ -35,8 +35,9 @@ async def on_message(message):
         return
 
     userAttempt = waifutools.GetUser(users, message.author.name)
+
     if(userAttempt == False):
-        user = waifutools.User(message.author.name, str(message.author.avatar_url))
+        user = waifutools.User(message.author.name, str(message.author.avatar_url), message.author.id)
         users.append(user)
     else:
         user = userAttempt

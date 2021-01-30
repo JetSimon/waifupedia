@@ -211,18 +211,18 @@ async def on_message(message):
             msg = await message.channel.send(user.name + ", you do not have the money for " + w.name + ", that waifu costs $" + str(w.value))
 
     if message.content.split(" ")[0] == "%give":
-        toSearch = message.content.split(" ", 1)[1].split(":")[0]
-        toGiveTo = message.content.split(" ", 1)[1].split(":")[1]
+        toSearch = message.content.split(" ", 1)[1].split(":")[0].strip()
+        toGiveTo = message.content.split(" ", 1)[1].split(":")[1].strip()
        
         for wife in user.harem:
             if(wife.name.lower().strip() == toSearch.lower().strip()):
                 w = wife
-                for u in users:
-                    if(u.name == toGiveTo):
-                        u.harem.append(w)
-                        user.harem.remove(w)
-                        msg = await message.channel.send("**" + user.name + "** has given **" + w.name + "** to **" + u.name + "**")
-                        return
+                u = waifutools.GetUser(users, toGiveTo)
+                if(u != False):
+                    u.harem.append(w)
+                    user.harem.remove(w)
+                    msg = await message.channel.send("**" + user.name + "** has given **" + w.name + "** to **" + u.name + "**")
+                    return
                 await message.channel.send(toGiveTo + " is not a user")
                 return
 

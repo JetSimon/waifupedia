@@ -86,16 +86,49 @@ async def on_message(message):
     if message.content == "%$" or message.content == "%money":
         await message.channel.send("You currently have $" + str(user.money) + " wikibucks!")
 
-    if message.content == "%harem":
-        out = ""
-        totalVal = 0
-        for w in user.harem:
-            out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
-            totalVal += w.value
-        out+="\nTotal Value: $" + str(totalVal)
-        embed=discord.Embed(title=user.name + "'s Harem", description=out, color=0xFF5733)
-        embed.set_author(name=message.author.name,icon_url=message.author.avatar_url)
-        await message.channel.send(embed=embed)
+    if message.content[0:6] == "%harem":
+        haremOwner = user
+
+        if(" " in message.content):
+            searched = message.content.split(" ", 1)[1]
+          
+            haremOwner = waifutools.GetUser(users, searched)
+
+        l = waifutools.HaremToPages(haremOwner.harem)
+        i = 0
+        out = waifutools.RenderList(l[i])
+
+        embed=discord.Embed(title=haremOwner.name + "'s Harem ("+ str(i+1) +"/"+ waifutools.GetHaremPageLength(haremOwner.harem)  + ")", description=out, color=0xFF5733)
+        embed.set_author(name=haremOwner.name,icon_url=haremOwner.img)
+        msg = await message.channel.send(embed=embed)
+
+        await msg.add_reaction("◀")
+        await msg.add_reaction("▶")
+
+        def reacted(reaction, u):
+            return (str(reaction.emoji) == "▶" or str(reaction.emoji) == "◀") and u != client.user
+
+        acceptingInput = True
+        while acceptingInput:
+            try:
+                reaction, u = await client.wait_for('reaction_add', timeout=10.0, check=reacted)
+            except asyncio.TimeoutError:
+                print("out of time!")
+                acceptingInput = False
+            else:
+                acceptingInput = True
+                await reaction.remove(u)
+                
+                
+                if(str(reaction.emoji) == "▶"):
+                    i = waifutools.NextPage(haremOwner.harem, i)
+                elif (str(reaction.emoji) == "◀"):
+                    i = waifutools.PrevPage(haremOwner.harem, i)
+                embed.description = (waifutools.RenderList(l[i]))
+                embed.title = haremOwner.name + "'s Harem ("+ str(i+1) +"/"+ waifutools.GetHaremPageLength(haremOwner.harem)  + ")"
+                await msg.edit(embed=embed)
+
+
 
     if message.content == "%wishlist":
         out = ""

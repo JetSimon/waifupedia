@@ -52,6 +52,42 @@ def WaifuEmbed(w, users):
 
     return embed
 
+def GetHaremPageLength(harem):
+    return str(len(HaremToPages(harem)))
+
+def HaremToPages(harem):
+    out = []
+    current = []
+
+    for w in harem:
+        current.append(w)
+        if(len(current) >= 10):
+            out.append(current)
+            current = []
+
+    if(len(current) != 0):
+        out.append(current)
+    
+    return out
+
+def RenderList(harem):
+    totalVal = 0
+    out=""
+    for w in harem:
+            out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
+            totalVal += w.value
+    out+="\nTotal Value: $" + str(totalVal)
+    return out
+
+def NextPage(l, current):
+    if(current + 1 <= len(l) - 1):
+        return current + 1
+    return current
+
+def PrevPage(l, current):
+    if(current - 1 >= 0):
+        return current - 1
+    return current
 
 def GenerateWaifu():
     errorThrown = False

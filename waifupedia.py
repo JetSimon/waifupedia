@@ -129,6 +129,7 @@ async def on_message(message):
                     i = waifutools.PrevPage(haremOwner.harem, i)
                 embed.description = (waifutools.RenderList(l[i]) + "\nTotal Value: $" + str(waifutools.GetValueOfHarem(haremOwner.harem)))
                 embed.title = haremOwner.name + "'s Harem ("+ str(i+1) +"/"+ waifutools.GetHaremPageLength(haremOwner.harem)  + ")"
+                print(i)
                 await msg.edit(embed=embed)
 
 

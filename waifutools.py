@@ -84,7 +84,7 @@ def RenderList(harem):
     return out
 
 def NextPage(l, current):
-    if(current + 1 <= len(l) - 1):
+    if(current + 1 <= int(GetHaremPageLength(l))-1):
         return current + 1
     return current
 

@@ -70,13 +70,17 @@ def HaremToPages(harem):
     
     return out
 
+def GetValueOfHarem(harem):
+    out=0
+    for w in harem:
+        out+=w.value
+    return out
+
 def RenderList(harem):
-    totalVal = 0
+    totalVal = GetValueOfHarem(harem)
     out=""
     for w in harem:
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
-            totalVal += w.value
-    out+="\nTotal Value: $" + str(totalVal)
     return out
 
 def NextPage(l, current):

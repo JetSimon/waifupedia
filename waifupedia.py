@@ -96,7 +96,7 @@ async def on_message(message):
 
         l = waifutools.HaremToPages(haremOwner.harem)
         i = 0
-        out = waifutools.RenderList(l[i])
+        out = (waifutools.RenderList(l[i]) + "\nTotal Value: $" + str(waifutools.GetValueOfHarem(haremOwner.harem)))
 
         embed=discord.Embed(title=haremOwner.name + "'s Harem ("+ str(i+1) +"/"+ waifutools.GetHaremPageLength(haremOwner.harem)  + ")", description=out, color=0xFF5733)
         embed.set_author(name=haremOwner.name,icon_url=haremOwner.img)
@@ -124,7 +124,7 @@ async def on_message(message):
                     i = waifutools.NextPage(haremOwner.harem, i)
                 elif (str(reaction.emoji) == "◀"):
                     i = waifutools.PrevPage(haremOwner.harem, i)
-                embed.description = (waifutools.RenderList(l[i]))
+                embed.description = (waifutools.RenderList(l[i]) + "\nTotal Value: $" + str(waifutools.GetValueOfHarem(haremOwner.harem)))
                 embed.title = haremOwner.name + "'s Harem ("+ str(i+1) +"/"+ waifutools.GetHaremPageLength(haremOwner.harem)  + ")"
                 await msg.edit(embed=embed)
 

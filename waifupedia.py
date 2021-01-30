@@ -171,10 +171,13 @@ async def on_message(message):
             if(wife.name == w.name):
                 msg = await message.channel.send(user.name + ", you are already wishing for " + w.name)
                 return
-                
-        user.wishlist.append(w)
-        msg = await message.channel.send("**"+user.name + "** has wished for **" + w.name+"**")
-        waifutools.Save(users)
+
+        if(len(user.wishlist) <= 10):  
+            user.wishlist.append(w)
+            msg = await message.channel.send("**"+user.name + "** has wished for **" + w.name+"**")
+            waifutools.Save(users)
+        else:
+            msg = await message.channel.send("**"+user.name + "**, you may only wish for 10 waifus at a time.")
 
     if message.content.split(" ")[0] == "%buy":
         toSearch = message.content.split(" ", 1)[1]

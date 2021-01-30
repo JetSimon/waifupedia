@@ -93,6 +93,9 @@ async def on_message(message):
             searched = message.content.split(" ", 1)[1]
           
             haremOwner = waifutools.GetUser(users, searched)
+            if(haremOwner == False):
+                await message.channel.send("Cannot find user by the name of " + searched)
+                return
 
         l = waifutools.HaremToPages(haremOwner.harem)
         i = 0

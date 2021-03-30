@@ -25,6 +25,9 @@ class User(object):
         self.wishlist = []
         self.lastRolled = datetime.datetime(1970, 1, 2)
     
+    def UpdateProfilePic(self, url):
+        self.img = url
+
     def CanRoll(self):
         return ((datetime.datetime.now() - self.lastRolled).total_seconds()) > ROLL_TIME
     
@@ -55,6 +58,11 @@ def WaifuEmbed(w, users):
 
 def GetHaremPageLength(harem):
     return str(len(HaremToPages(harem)))
+
+def UpdateUserInfo(users):
+    if(users != []):
+        for user in users:
+            user.UpdateProfilePic()
 
 def HaremToPages(harem):
     out = []

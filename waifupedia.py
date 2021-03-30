@@ -41,6 +41,7 @@ async def on_message(message):
         users.append(user)
     else:
         user = userAttempt
+        user.UpdateProfilePic(str(message.author.avatar_url))
 
     if message.content == '%w' or message.content == '%wiki':
         

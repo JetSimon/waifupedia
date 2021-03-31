@@ -1,4 +1,4 @@
-import os,io,json,random,discord,wikipedia,waifutools,jsonpickle,asyncio,datetime
+import os,io,json,random,discord,waifutools,jsonpickle,asyncio,datetime
 from dotenv import load_dotenv
 
 
@@ -9,6 +9,12 @@ GUILD = os.getenv('DISCORD_GUILD')
 client = discord.Client()
 
 users = []
+
+waifuPool = []
+
+for i in range(5):
+    print("Generating Waifu " + str(i + 1))
+    waifuPool.append(waifutools.GenerateWaifu())
 
 
 if os.path.isfile('users.json'):
@@ -52,7 +58,7 @@ async def on_message(message):
             if(random.randint(0,100) == 50 and len(user.wishlist) > 0):
                 w = random.choice(user.wishlist)
             else:
-                w = waifutools.GenerateWaifu()
+                w = waifutools.GenerateWaifuFromPool(waifuPool)
 
             embed=waifutools.WaifuEmbed(w,users)
             msg = await message.channel.send(embed=embed)
@@ -250,7 +256,8 @@ async def on_message(message):
         waifutools.Save(users)
         await message.channel.send(user.name + " has cleansed their harem for $" + str(totalVal))
         
-
+    if(len(waifuPool) < 5):
+        waifuPool.append(waifutools.GenerateWaifu())
 
 
 client.run(TOKEN)

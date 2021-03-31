@@ -102,7 +102,13 @@ def PrevPage(l, current):
         return current - 1
     return current
 
+def GenerateWaifuFromPool(waifuPool):
+    w = random.choice(waifuPool)
+    waifuPool.remove(w)
+    return w
+
 def GenerateWaifu():
+    print("Generating Waifu...")
     errorThrown = False
     try:
         p = wikipedia.page(wikipedia.random(), preload=True)
@@ -126,6 +132,7 @@ def GenerateWaifu():
 
     val = int((len(p.content) / 100))
     w = Waifu(p.title, p.images[0], val, p.summary.split(".")[0], p.url)
+    print("DONE GENERATION!")
     return w
  
 def SearchFor(s):

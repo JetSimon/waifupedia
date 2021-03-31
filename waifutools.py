@@ -1,6 +1,6 @@
 import json, random, jsonpickle, wikipedia, datetime, discord
 
-ROLL_TIME = 30
+ROLL_TIME = 10
 
 
 class Waifu(object):

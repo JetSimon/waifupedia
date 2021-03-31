@@ -86,7 +86,9 @@ async def on_message(message):
 
         else:
             await message.channel.send(user.name + ", you must wait " + str(user.TimeToRoll()) + " seconds to roll!")
-    
+    else:
+        if(len(waifuPool) < 5):
+            waifuPool.append(waifutools.GenerateWaifu())
     if message.content == "%help":
         embed=discord.Embed(title="LIST OF COMMANDS", description=waifutools.GetRules(), color=0xFF5733)
         await message.channel.send(embed=embed)
@@ -256,8 +258,7 @@ async def on_message(message):
         waifutools.Save(users)
         await message.channel.send(user.name + " has cleansed their harem for $" + str(totalVal))
         
-    if(len(waifuPool) < 5):
-        waifuPool.append(waifutools.GenerateWaifu())
+    
 
 
 client.run(TOKEN)

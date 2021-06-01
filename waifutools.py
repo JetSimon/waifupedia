@@ -95,13 +95,14 @@ def RenderList(harem):
     return out
 
 def GetShop():
-    out = ""
-    items = ["Wishing Fluid (%20 higher wishlist chance for 5 rolls)", "Death Note Page (type %kill [waifu] and remove it from existance if owned by anyone)", "Give Jet Money (just gives jet waifubucks)", "Test"]
+    out = "\n"
+    items = ["Wishing Fluid", "Death Note Page", "Give Jet Money", "Test"]
+    desc = ["20% higher wishlist chance for 5 rolls","type %kill [waifu] and remove it from existence if owned by anyone","just gives jet waifubucks","test"]
     prices = [300,2000,69,420]
     icons = ["1️⃣","2️⃣","3️⃣","4️⃣"]
 
     for i in range(4):
-        out += "🛒 **" + icons[i] + "** - *" + items[i] + "* (**$" + str(prices[i]) + "**)\n"
+        out += "🛒 **" + icons[i] + "** - **" + items[i] + "** - *" + desc[i] +"* **($" + str(prices[i]) + ")**\n\n\n"
 
     return out, items
 
@@ -204,7 +205,8 @@ def GetUser(users,name):
 def GetRules():
     rules = ["%w/%wiki - roll a waifu", "%divorce WAIFUNAME- divorce a waifu for money", "%divorceall divorce all waifus are married to"
     ,"%buy WAIFUNAME - buy any waifu if you have the money", "%im WAIFUNAME - search for a waifu", "%harem - view all waifus you are currently married to", "%harem USER - view all waifus a user currently married to"
-    ,"%$/%money - see all your wikibucks you have", "%wish WAIFUNAME - add waifu to your wishlist", "%wishremove WAIFUNAME - remove waifu from your wishlist", "%wishlist - view your wishlist", "%give WAIFUNAME:USER", "%kill - murder another player's waifu if you have a Death Note Page", "%inventory/%inv - check your inventory", "%shop - spend waifubucks on goods and or services!"]
+    ,"%$/%money - see all your wikibucks you have", "%wish WAIFUNAME - add waifu to your wishlist", "%wishremove WAIFUNAME - remove waifu from your wishlist", "%wishlist - view your wishlist", "%give WAIFUNAME:USER", "%kill - murder another player's waifu if you have a Death Note Page", "%inventory/%inv - check your inventory", "%shop - spend waifubucks on goods and or services!",
+    "%bet [number amount] - gamble your money for a chance to double it!"]
     out=""
     for rule in rules:
         out += " - " + rule + "\n"

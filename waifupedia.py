@@ -335,7 +335,43 @@ async def on_message(message):
             await message.channel.send(waifutools.FindAndRemoveWaifu(users, target))
         else:
             await message.channel.send("You do not have the ability to kill a waifu")
-        
+    
+    if message.content[0:4] == "%bet":
+        amount = int(message.content.split(" ")[1])
+        if user.money >= amount:
+            user.money -= amount
+            embed=discord.Embed(title="Pick A Cup!", description="Choose a cup below. If you pick the correct cup, you will double your bet of $" + str(amount), color=0xadd8e6)
+            embed.set_image(url="https://i.ytimg.com/vi/luMtoqCOpT0/mqdefault.jpg")
+            msg = await message.channel.send(embed=embed)
+
+            await msg.add_reaction("🥤")
+            await msg.add_reaction("☕")
+            await msg.add_reaction("🍶")
+
+            answer = random.randint(1,3)
+
+            def reacted(reaction, u):
+                return (str(reaction.emoji) == "🥤" or str(reaction.emoji) == "☕" or str(reaction.emoji) == "🍶") and u == message.author
+
+            acceptingInput = True
+            while acceptingInput:
+                try:
+                    reaction, u = await client.wait_for('reaction_add', timeout=30.0, check=reacted)
+                except asyncio.TimeoutError:
+                    print("out of time!")
+                    user.money += amount
+                    acceptingInput = False
+                else:
+                    acceptingInput = False
+                    await reaction.remove(u)
+                    if(answer == 1):
+                        user.money += amount *2
+                        await message.channel.send("You won! You have doubled your bet of **$" + str(amount) +"** to **$" + str(amount * 2) + "**! 💰💰💰")
+                        return
+                    await message.channel.send("Dang! That was the wrong cup. Better luck next time! 🙏")
+                    
+        else:
+            await message.channel.send("You cannot bet that much money")
     
 
 

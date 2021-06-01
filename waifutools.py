@@ -98,9 +98,10 @@ def GetShop():
     out = ""
     items = ["Wishing Fluid (%20 higher wishlist chance for 5 rolls)", "Death Note Page (type %kill [waifu] and remove it from existance if owned by anyone)", "Give Jet Money (just gives jet waifubucks)", "Test"]
     prices = [300,2000,69,420]
+    icons = ["1️⃣","2️⃣","3️⃣","4️⃣"]
 
     for i in range(4):
-        out += "🛒 **" + str(i+1) + "** - *" + items[i] + "* ($" + str(prices[i]) + ")\n"
+        out += "🛒 **" + icons[i] + "** - *" + items[i] + "* (**$" + str(prices[i]) + "**)\n"
 
     return out, items
 

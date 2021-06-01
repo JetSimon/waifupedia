@@ -1,6 +1,7 @@
 import os,io,json,random,discord,waifutools,jsonpickle,asyncio,datetime
 from dotenv import load_dotenv
 
+POOL_SIZE = 2
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -12,7 +13,7 @@ users = []
 
 waifuPool = []
 
-for i in range(5):
+for i in range(POOL_SIZE):
     print("Generating Waifu " + str(i + 1))
     waifuPool.append(waifutools.GenerateWaifu())
 
@@ -22,6 +23,7 @@ if os.path.isfile('users.json'):
     with open('users.json', 'r') as fp:
         u = fp.read()
         users = jsonpickle.decode(u)
+
 
 @client.event
 async def on_ready():
@@ -50,15 +52,18 @@ async def on_message(message):
         user.UpdateProfilePic(str(message.author.avatar_url))
 
     if message.content == '%w' or message.content == '%wiki':
-        
+        print (user.betterwish)
         if(user.CanRoll()):
             await message.channel.send("Rolling up a waifu for " + user.name + "...")
             user.lastRolled = datetime.datetime.now()
 
-            if(random.randint(0,100) == 50 and len(user.wishlist) > 0):
+            if(((user.betterwish > 0 and random.randint(0,35) == 10) or random.randint(0,100) == 50) and len(user.wishlist) > 0):
                 w = random.choice(user.wishlist)
             else:
                 w = waifutools.GenerateWaifuFromPool(waifuPool)
+
+            if user.betterwish > 0:
+                user.betterwish -= 1
 
             embed=waifutools.WaifuEmbed(w,users)
             msg = await message.channel.send(embed=embed)
@@ -87,7 +92,7 @@ async def on_message(message):
         else:
             await message.channel.send(user.name + ", you must wait " + str(user.TimeToRoll()) + " seconds to roll!")
     else:
-        if(len(waifuPool) < 5):
+        if(len(waifuPool) < POOL_SIZE):
             waifuPool.append(waifutools.GenerateWaifu())
     if message.content == "%help":
         embed=discord.Embed(title="LIST OF COMMANDS", description=waifutools.GetRules(), color=0xFF5733)
@@ -95,6 +100,21 @@ async def on_message(message):
     
     if message.content == "%$" or message.content == "%money":
         await message.channel.send("You currently have $" + str(user.money) + " wikibucks!")
+    
+    if message.content[0:4] == "%use":
+        toUse = message.content.split(" ", 1)[1]
+        if toUse in user.inventory:
+            user.UseItem(toUse)
+            await message.channel.send("Used " + toUse + "!")
+        else:
+            await message.channel.send("You do not have any " + toUse + "!")
+        return
+    
+    if message.content == "%inventory" or message.content == "%inv":
+        embed=discord.Embed(title=user.name + "'s Inventory", description=waifutools.GetInventory(user), color=0xFF5733)
+        embed.set_author(name=user.name,icon_url=user.img)
+        msg = await message.channel.send(embed=embed)
+        return
 
     if message.content[0:6] == "%harem":
         haremOwner = user
@@ -142,6 +162,56 @@ async def on_message(message):
                 print(i)
                 await msg.edit(embed=embed)
 
+    if message.content[0:6] == "%shop":
+        out, items = waifutools.GetShop()
+        embed=discord.Embed(title="Shop o' Wares (WORK IN PROGRESS)", description=out, color=0xadd8e6)
+        embed.set_image(url="https://media.pri.org/s3fs-public/styles/open_graph/public/images/2020/04/2020-4-20-nycbodega-nassimalmontaser_1.jpg?itok=cvfUVF3d")
+        msg = await message.channel.send(embed=embed)
+
+        await msg.add_reaction("1️⃣")
+        await msg.add_reaction("2️⃣")
+        await msg.add_reaction("3️⃣")
+        await msg.add_reaction("4️⃣")
+
+        def reacted(reaction, u):
+            return (str(reaction.emoji) == "1️⃣" or str(reaction.emoji) == "2️⃣" or str(reaction.emoji) == "3️⃣" or str(reaction.emoji) == "4️⃣") and u != client.user
+
+        acceptingInput = True
+        while acceptingInput:
+            try:
+                reaction, u = await client.wait_for('reaction_add', timeout=30.0, check=reacted)
+            except asyncio.TimeoutError:
+                print("out of time!")
+                acceptingInput = False
+            else:
+                acceptingInput = True
+                await reaction.remove(u)
+                
+                r = waifutools.GetUser(users, u.name)
+                if(str(reaction.emoji) == "1️⃣"):
+                    if(r.money >= 300):
+                        r.money -= 300
+                        r.betterwish += 5
+                        await message.channel.send("**" + u.name + "**" + " bought Wishing Fluid!")
+                    else:
+                        await message.channel.send("**" + u.name + "**" + ", not enough money!")
+                elif(str(reaction.emoji) == "2️⃣"):
+                    if(r.money >= 2000):
+                        r.money -= 2000
+                        r.inventory["Death Note Page"] = 1 if "Death Note Page" not in r.inventory else r.inventory["Death Note Page"] + 1
+                        await message.channel.send("**" + u.name + "**" + " bought Death Note Page!")
+                    else:
+                        await message.channel.send("**" + u.name + "**" + ", not enough money!")
+                elif(str(reaction.emoji) == "3️⃣"):
+                    if(r.money >= 69):
+                        r.money -= 69
+                        waifutools.GetUser(users, "SimonJet").money += 69
+                        await message.channel.send("**" + u.name + "**" + " donated $69 to Jet!")
+                    else:
+                        await message.channel.send("**" + u.name + "**" + ", not enough money!")
+                elif(str(reaction.emoji) == "4️⃣"):
+                    await message.channel.send("This one does nothing yet!")
+        return
 
 
     if message.content == "%wishlist":
@@ -257,6 +327,14 @@ async def on_message(message):
         user.harem = []
         waifutools.Save(users)
         await message.channel.send(user.name + " has cleansed their harem for $" + str(totalVal))
+    
+    if message.content[0:5] == "%kill":
+        if(user.inventory["Death Note Page"] > 0):
+            user.inventory["Death Note Page"] -= 1
+            target = message.content.split(" ", 1)[1]
+            await message.channel.send(waifutools.FindAndRemoveWaifu(users, target))
+        else:
+            await message.channel.send("You do not have the ability to kill a waifu")
         
     
 

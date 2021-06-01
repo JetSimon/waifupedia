@@ -23,6 +23,8 @@ class User(object):
         self.money = 0
         self.harem = []
         self.wishlist = []
+        self.betterwish = 0
+        self.inventory = {}
         self.lastRolled = datetime.datetime(1970, 1, 2)
     
     def UpdateProfilePic(self, url):
@@ -92,6 +94,28 @@ def RenderList(harem):
             out+= "- **" + w.name + "** ($" + str(w.value) + ")\n"
     return out
 
+def GetShop():
+    out = ""
+    items = ["Wishing Fluid (%20 higher wishlist chance for 5 rolls)", "Death Note Page (type %kill [waifu] and remove it from existance if owned by anyone)", "Give Jet Money (just gives jet waifubucks)", "Test"]
+    prices = [300,2000,69,420]
+
+    for i in range(4):
+        out += "🛒 **" + str(i+1) + "** - *" + items[i] + "* ($" + str(prices[i]) + ")\n"
+
+    return out, items
+
+def GetInventory(user):
+    out = ""
+    inv = user.inventory
+
+    if len(inv) == 0:
+        return "*inventory is empty*"
+
+    for key in inv:
+        if(inv[key] > 0):
+            out += " **" + key + "**   (" + str(inv[key]) + ")\n"
+    return out
+
 def NextPage(l, current):
     if(current + 1 <= int(GetHaremPageLength(l))-1):
         return current + 1
@@ -141,6 +165,16 @@ def GenerateWaifu():
     return w
  
 def SearchFor(s):
+
+    if "-USEID" in s:
+        try:
+
+            id = int(s.split("-USEID")[1].strip()[1:])
+            print(id)
+            return wikipedia.page(pageid=id, preload=True, auto_suggest=False)
+        except wikipedia.PageError as e:
+            return False
+    
     try:
         p = wikipedia.page(title=wikipedia.search(s, results=1, suggestion=False)[0], preload=True)
     except wikipedia.DisambiguationError as e:
@@ -169,9 +203,16 @@ def GetUser(users,name):
 def GetRules():
     rules = ["%w/%wiki - roll a waifu", "%divorce WAIFUNAME- divorce a waifu for money", "%divorceall divorce all waifus are married to"
     ,"%buy WAIFUNAME - buy any waifu if you have the money", "%im WAIFUNAME - search for a waifu", "%harem - view all waifus you are currently married to", "%harem USER - view all waifus a user currently married to"
-    ,"%$/%money - see all your wikibucks you have", "%wish WAIFUNAME - add waifu to your wishlist", "%wishremove WAIFUNAME - remove waifu from your wishlist", "%wishlist - view your wishlist", "%give WAIFUNAME:USER"]
+    ,"%$/%money - see all your wikibucks you have", "%wish WAIFUNAME - add waifu to your wishlist", "%wishremove WAIFUNAME - remove waifu from your wishlist", "%wishlist - view your wishlist", "%give WAIFUNAME:USER", "%kill - murder another player's waifu if you have a Death Note Page", "%inventory/%inv - check your inventory", "%shop - spend waifubucks on goods and or services!"]
     out=""
     for rule in rules:
         out += " - " + rule + "\n"
     return out
 
+def FindAndRemoveWaifu(users, name):
+    for user in users:
+        for waifu in user.harem:
+            if waifu.name == name:
+                user.harem.remove(waifu)
+                return "Murdered **" + name + "**, waifu of <@" + user.id + "> 💀💀💀" 
+    return "Waifu not found by name of **" + name + "**"

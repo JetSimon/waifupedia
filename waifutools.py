@@ -131,7 +131,7 @@ def PrevPage(l, current):
 def GenerateWaifuFromPool(waifuPool):
 
     if(len(waifuPool) <= 0):
-        return waifutools.GenerateWaifu()
+        return GenerateWaifu()
 
 
     w = random.choice(waifuPool)
